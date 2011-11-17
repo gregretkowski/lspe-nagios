@@ -1,0 +1,31 @@
+WHAT'S IN THIS DIRECTORY
+
+These are files I referenced during my LSPE talk on combining Nagios and
+Puppet to restart services automatically.. 
+
+FILES:
+auth.conf: puppet authentication file.. this contains the stanza for /run
+commands.cfg: snippet of nagios config to add the handle_puppetrun script
+handle_puppetrun.sh: the script that goes into the Nagios plugins dir
+httpd.pp: The puppet class for the apache webserver
+puppet.conf: The puppet agent section of the global puppet config file
+services.cfg: the nagios service definition for our puppet handler
+
+DEBUGGING COMMANDS:
+
+For debugging, on your webserver you can use this command line. You will 
+need to use sudo or run it as root. You may or may not need the '--fqdn 
+`hostname`' depending on your configuration.
+
+/usr/sbin/puppetd --listen --verbose --no-daemonize --no-client --fqdn `hostname`
+
+Then on your nagios node you can run this to make sure the invocation is 
+working. You may have to use sudo or run it as root - as it needs access 
+to the puppet certs to run. In my configuration I've added the nagios user 
+to the sudoers file so that it can run the command as root.
+
+puppetrun -a --host cato.rage.net
+
+You can also trigger the handle_puppetrun shell script manually, via:
+
+sudo -u nagios /usr/lib/nagios/plugins/handle_puppetrun.sh CRITICAL HARD cato.rage.net 1
